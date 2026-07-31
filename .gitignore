@@ -1,0 +1,28 @@
+# Environment
+.env
+.env.local
+
+# Go
+apps/backend/pdv-backend
+apps/backend/*.exe
+
+# Node (covered per-app too, kept here for anything at the root)
+node_modules/
+
+# Rust/Tauri build output (also covered by apps/client/src-tauri/.gitignore)
+target/
+
+# Local SQLite dev databases (client data lives outside VCS)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+.idea/

@@ -1,0 +1,7 @@
+DROP TABLE IF EXISTS return_items;
+DROP TABLE IF EXISTS returns;
+DROP TABLE IF EXISTS sale_payments;
+DROP TABLE IF EXISTS sale_items;
+DROP TABLE IF EXISTS sales;
+DROP TABLE IF EXISTS cash_movements;
+DROP TABLE IF EXISTS cash_sessions;
