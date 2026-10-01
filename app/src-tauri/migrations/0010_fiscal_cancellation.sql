@@ -1,0 +1,15 @@
+-- Phase 7 return-triggered NFC-e cancellation (plan section 4.5's "fiscal
+-- reversal note", implemented as a whole-document cancellation — see
+-- fiscal_client::try_cancel_for_return's doc comment for why: Focus NFe's
+-- NFC-e contract has no linked-reversal-note capability, only DELETE
+-- /v2/nfce/{ref}, and only within 30 minutes of authorization).
+--
+-- `cancellation_note` records why a cancellation attempt was skipped or
+-- failed (window expired, rejected by SEFAZ, connectivity) when the
+-- document itself stays `authorized` — a return is never blocked on this
+-- (plan section 1.2), so the note is purely informational, surfaced on
+-- the Returns screen and to the back office via sync. Cleared back to
+-- NULL on a successful cancellation, whose outcome is instead recorded by
+-- the status transition to 'cancelled' the schema already lists (plan
+-- section 3.4).
+ALTER TABLE fiscal_documents ADD COLUMN cancellation_note TEXT;

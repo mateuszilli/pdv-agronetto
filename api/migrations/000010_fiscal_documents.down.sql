@@ -1,0 +1,1 @@
+DROP INDEX fiscal_documents_status_created_at_idx;

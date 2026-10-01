@@ -1,0 +1,511 @@
+<title>PDV — Back office</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --page-plane: #f9f9f7;
+    --surface-1: #fcfcfb;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --gridline: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11, 11, 11, 0.1);
+    --series-1: #2a78d6; /* blue — sequential, avg-ticket bars */
+    --series-2: #eb6834; /* orange — ABC class B */
+    --series-3: #1baf7a; /* aqua — ABC class C */
+    --status-critical: #d03b3b;
+    --status-critical-bg: #fbe9e8;
+    --status-good: #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --page-plane: #0d0d0d;
+      --surface-1: #1a1a19;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted: #898781;
+      --gridline: #2c2c2a;
+      --baseline: #383835;
+      --border: rgba(255, 255, 255, 0.1);
+      --series-1: #3987e5;
+      --series-2: #d95926;
+      --series-3: #199e70;
+      --status-critical: #e66767;
+      --status-critical-bg: #3a1f1f;
+      --status-good: #0ca30c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page-plane);
+    color: var(--text-primary);
+  }
+  .shell { max-width: 960px; margin: 0 auto; padding: 24px 20px 64px; }
+  header.top {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  header.top h1 { font-size: 20px; margin: 0; }
+  header.top p { color: var(--text-secondary); font-size: 13px; margin: 4px 0 0; }
+  button {
+    font: inherit; cursor: pointer; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--surface-1); color: var(--text-primary); padding: 8px 14px;
+  }
+  button.primary { background: var(--series-1); color: #fff; border-color: transparent; }
+  button:disabled { opacity: 0.5; cursor: default; }
+  input[type="text"], input[type="password"], input[type="date"], input[type="number"] {
+    font: inherit; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--surface-1); color: var(--text-primary);
+  }
+  label { font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 4px; }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+    padding: 18px 20px; margin-bottom: 16px;
+  }
+  #login-section .card { max-width: 340px; margin: 60px auto; }
+  #login-section .field { margin-bottom: 14px; }
+  #login-error { color: var(--status-critical); font-size: 13px; margin-top: 10px; }
+
+  .filters { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; margin-bottom: 16px; }
+  .filters .field { min-width: 140px; }
+
+  .alert-banner {
+    display: flex; gap: 10px; align-items: flex-start; background: var(--status-critical-bg);
+    border: 1px solid var(--status-critical); border-radius: 10px; padding: 14px 16px;
+    margin-bottom: 16px; color: var(--text-primary);
+  }
+  .alert-banner strong { color: var(--status-critical); }
+  .alert-banner ul { margin: 6px 0 0; padding-left: 18px; font-size: 13px; }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .kpi .kpi-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.02em; }
+  .kpi .kpi-value { font-size: 26px; margin-top: 4px; font-variant-numeric: normal; }
+
+  h2 { font-size: 15px; margin: 0 0 12px; }
+  .empty { color: var(--text-muted); font-size: 13px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--gridline); }
+  th { color: var(--text-muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.02em; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .bar-cell { display: flex; align-items: center; gap: 8px; }
+  .bar-track { flex: 1; height: 8px; background: var(--gridline); border-radius: 4px; overflow: hidden; min-width: 60px; }
+  .bar-fill { height: 100%; border-radius: 4px; background: var(--series-1); }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; color: #fff; }
+  .badge-A { background: var(--series-1); }
+  .badge-B { background: var(--series-2); }
+  .badge-C { background: var(--series-3); }
+
+  .daybars { display: flex; align-items: flex-end; gap: 2px; height: 120px; margin-top: 8px; }
+  .daybar { flex: 1; background: var(--series-1); border-radius: 4px 4px 0 0; min-height: 2px; }
+
+  .scrollable { overflow-x: auto; }
+  a.logout { color: var(--text-secondary); font-size: 13px; cursor: pointer; }
+</style>
+
+<div class="shell">
+  <header class="top">
+    <div>
+      <h1>PDV — Back office</h1>
+      <p>Margin, dead stock, average ticket, ABC curve — plan section 4.7.</p>
+    </div>
+    <a class="logout" id="logout-link" hidden>Log out</a>
+  </header>
+
+  <section id="login-section">
+    <div class="card">
+      <form id="login-form">
+        <div class="field">
+          <label for="device-id">Device ID</label>
+          <input type="text" id="device-id" value="dashboard" required />
+        </div>
+        <div class="field">
+          <label for="operator-pin">Operator PIN</label>
+          <input type="password" id="operator-pin" required />
+        </div>
+        <button type="submit" class="primary">Log in</button>
+        <div id="login-error"></div>
+      </form>
+    </div>
+  </section>
+
+  <section id="app-section" hidden>
+    <div class="filters">
+      <div class="field">
+        <label for="from-date">From</label>
+        <input type="date" id="from-date" />
+      </div>
+      <div class="field">
+        <label for="to-date">To</label>
+        <input type="date" id="to-date" />
+      </div>
+      <div class="field">
+        <label for="dead-stock-days">Dead stock (days idle)</label>
+        <input type="number" id="dead-stock-days" min="1" value="60" style="width: 90px" />
+      </div>
+      <div class="field">
+        <button id="apply-filters" class="primary">Apply</button>
+      </div>
+    </div>
+
+    <div id="fiscal-alert" class="alert-banner" hidden>
+      <span>⚠️</span>
+      <div>
+        <strong>Fiscal documents stuck pending</strong>
+        <div id="fiscal-alert-body"></div>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="card kpi">
+        <div class="kpi-label">Revenue</div>
+        <div class="kpi-value" id="kpi-revenue">—</div>
+      </div>
+      <div class="card kpi">
+        <div class="kpi-label">Sales</div>
+        <div class="kpi-value" id="kpi-sales">—</div>
+      </div>
+      <div class="card kpi">
+        <div class="kpi-label">Average ticket</div>
+        <div class="kpi-value" id="kpi-avg-ticket">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Average ticket by day</h2>
+      <div id="daybars-empty" class="empty" hidden>No sales in this period.</div>
+      <div class="daybars" id="daybars"></div>
+    </div>
+
+    <div class="card">
+      <h2>Margin per product</h2>
+      <div id="margin-empty" class="empty" hidden>No sales in this period.</div>
+      <div class="scrollable">
+        <table id="margin-table" hidden>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th class="num">Qty sold</th>
+              <th class="num">Revenue</th>
+              <th class="num">Cost</th>
+              <th class="num">Margin</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>ABC curve</h2>
+      <div id="abc-empty" class="empty" hidden>No sales in this period.</div>
+      <div class="scrollable">
+        <table id="abc-table" hidden>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Class</th>
+              <th class="num">Revenue</th>
+              <th class="num">Cumulative %</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Dead stock</h2>
+      <div id="dead-stock-empty" class="empty" hidden>No idle products found.</div>
+      <div class="scrollable">
+        <table id="dead-stock-table" hidden>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th class="num">Stock</th>
+              <th>Last sale</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  (function () {
+    "use strict";
+
+    var TOKEN_KEY = "pdv_dashboard_token";
+
+    var loginSection = document.getElementById("login-section");
+    var appSection = document.getElementById("app-section");
+    var logoutLink = document.getElementById("logout-link");
+
+    function money(cents) {
+      return (cents || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    }
+    function pct(x) {
+      return ((x || 0) * 100).toFixed(1) + "%";
+    }
+    function escapeHtml(s) {
+      return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      });
+    }
+
+    function token() {
+      return sessionStorage.getItem(TOKEN_KEY);
+    }
+
+    async function apiFetch(path) {
+      var res = await fetch(path, { headers: { Authorization: "Bearer " + token() } });
+      if (res.status === 401) {
+        sessionStorage.removeItem(TOKEN_KEY);
+        showLogin();
+        throw new Error("session expired, please log in again");
+      }
+      if (!res.ok) {
+        var body = await res.text();
+        throw new Error("request to " + path + " failed (" + res.status + "): " + body);
+      }
+      return res.json();
+    }
+
+    function showLogin() {
+      loginSection.hidden = false;
+      appSection.hidden = true;
+      logoutLink.hidden = true;
+    }
+    function showApp() {
+      loginSection.hidden = true;
+      appSection.hidden = false;
+      logoutLink.hidden = false;
+    }
+
+    // --- Login ---
+
+    document.getElementById("login-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      var errorEl = document.getElementById("login-error");
+      errorEl.textContent = "";
+      var deviceId = document.getElementById("device-id").value.trim();
+      var operatorPin = document.getElementById("operator-pin").value.trim();
+      try {
+        var res = await fetch("/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ device_id: deviceId, operator_pin: operatorPin }),
+        });
+        if (!res.ok) {
+          var body = await res.text();
+          throw new Error("login rejected (" + res.status + "): " + body);
+        }
+        var data = await res.json();
+        sessionStorage.setItem(TOKEN_KEY, data.token);
+        showApp();
+        loadAll();
+      } catch (err) {
+        errorEl.textContent = String(err.message || err);
+      }
+    });
+
+    logoutLink.addEventListener("click", function () {
+      sessionStorage.removeItem(TOKEN_KEY);
+      showLogin();
+    });
+
+    // --- Filters ---
+
+    var fromInput = document.getElementById("from-date");
+    var toInput = document.getElementById("to-date");
+    var daysInput = document.getElementById("dead-stock-days");
+
+    function defaultDates() {
+      var to = new Date();
+      var from = new Date();
+      from.setDate(from.getDate() - 30);
+      return { from: from.toISOString().slice(0, 10), to: to.toISOString().slice(0, 10) };
+    }
+    var defaults = defaultDates();
+    fromInput.value = defaults.from;
+    toInput.value = defaults.to;
+
+    document.getElementById("apply-filters").addEventListener("click", loadAll);
+
+    function periodQuery() {
+      var q = [];
+      if (fromInput.value) q.push("from=" + fromInput.value);
+      if (toInput.value) q.push("to=" + toInput.value);
+      return q.length ? "?" + q.join("&") : "";
+    }
+
+    // --- Rendering ---
+
+    function renderKpis(avgTicket) {
+      document.getElementById("kpi-revenue").textContent = money(avgTicket.revenue);
+      document.getElementById("kpi-sales").textContent = avgTicket.sale_count;
+      document.getElementById("kpi-avg-ticket").textContent = money(avgTicket.avg_ticket);
+    }
+
+    function renderDayBars(avgTicket) {
+      var container = document.getElementById("daybars");
+      var emptyEl = document.getElementById("daybars-empty");
+      container.innerHTML = "";
+      var days = avgTicket.by_day || [];
+      if (days.length === 0) {
+        emptyEl.hidden = false;
+        return;
+      }
+      emptyEl.hidden = true;
+      var max = Math.max.apply(null, days.map(function (d) { return d.revenue || 0; })) || 1;
+      days.forEach(function (d) {
+        var bar = document.createElement("div");
+        bar.className = "daybar";
+        var heightPct = Math.max(2, ((d.revenue || 0) / max) * 100);
+        bar.style.height = heightPct + "%";
+        var day = new Date(d.day).toLocaleDateString("pt-BR");
+        bar.title = day + " — " + money(d.revenue) + " (" + d.sale_count + " sale(s), avg " + money(d.avg_ticket) + ")";
+        container.appendChild(bar);
+      });
+    }
+
+    function renderMargin(rows) {
+      var table = document.getElementById("margin-table");
+      var emptyEl = document.getElementById("margin-empty");
+      var tbody = table.querySelector("tbody");
+      tbody.innerHTML = "";
+      if (!rows.length) {
+        table.hidden = true;
+        emptyEl.hidden = false;
+        return;
+      }
+      emptyEl.hidden = true;
+      table.hidden = false;
+      var maxRevenue = Math.max.apply(null, rows.map(function (r) { return r.revenue || 0; })) || 1;
+      rows.forEach(function (r) {
+        var tr = document.createElement("tr");
+        var marginColor = r.margin_amount >= 0 ? "var(--series-1)" : "var(--status-critical)";
+        tr.innerHTML =
+          "<td>" + escapeHtml(r.name) + (r.sku ? " <span style='color:var(--text-muted)'>(" + escapeHtml(r.sku) + ")</span>" : "") + "</td>" +
+          "<td class='num'>" + (r.quantity_sold || 0).toLocaleString("pt-BR") + "</td>" +
+          "<td class='num'>" +
+            "<div class='bar-cell'>" +
+              "<div class='bar-track'><div class='bar-fill' style='width:" + (((r.revenue || 0) / maxRevenue) * 100) + "%'></div></div>" +
+              "<span>" + money(r.revenue) + "</span>" +
+            "</div>" +
+          "</td>" +
+          "<td class='num'>" + money(r.cost) + "</td>" +
+          "<td class='num' style='color:" + marginColor + "'>" + money(r.margin_amount) + " (" + pct(r.margin_pct) + ")</td>";
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderAbc(rows) {
+      var table = document.getElementById("abc-table");
+      var emptyEl = document.getElementById("abc-empty");
+      var tbody = table.querySelector("tbody");
+      tbody.innerHTML = "";
+      if (!rows.length) {
+        table.hidden = true;
+        emptyEl.hidden = false;
+        return;
+      }
+      emptyEl.hidden = true;
+      table.hidden = false;
+      rows.forEach(function (r) {
+        var tr = document.createElement("tr");
+        tr.innerHTML =
+          "<td>" + escapeHtml(r.name) + (r.sku ? " <span style='color:var(--text-muted)'>(" + escapeHtml(r.sku) + ")</span>" : "") + "</td>" +
+          "<td><span class='badge badge-" + r.class + "'>" + r.class + "</span></td>" +
+          "<td class='num'>" + money(r.revenue) + "</td>" +
+          "<td class='num'>" + pct(r.cumulative_pct) + "</td>";
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderDeadStock(rows) {
+      var table = document.getElementById("dead-stock-table");
+      var emptyEl = document.getElementById("dead-stock-empty");
+      var tbody = table.querySelector("tbody");
+      tbody.innerHTML = "";
+      if (!rows.length) {
+        table.hidden = true;
+        emptyEl.hidden = false;
+        return;
+      }
+      emptyEl.hidden = true;
+      table.hidden = false;
+      rows.forEach(function (r) {
+        var tr = document.createElement("tr");
+        var lastSale = r.last_sale_at ? new Date(r.last_sale_at).toLocaleDateString("pt-BR") : "never";
+        tr.innerHTML =
+          "<td>" + escapeHtml(r.name) + (r.sku ? " <span style='color:var(--text-muted)'>(" + escapeHtml(r.sku) + ")</span>" : "") + "</td>" +
+          "<td class='num'>" + (r.quantity || 0).toLocaleString("pt-BR") + " " + escapeHtml(r.stock_unit) + "</td>" +
+          "<td>" + lastSale + "</td>";
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderFiscalAlert(data) {
+      var banner = document.getElementById("fiscal-alert");
+      var body = document.getElementById("fiscal-alert-body");
+      var docs = data.documents || [];
+      if (!docs.length) {
+        banner.hidden = true;
+        return;
+      }
+      banner.hidden = false;
+      body.innerHTML =
+        docs.length + " document(s) pending past " + data.threshold_hours + "h (plan section 5.2's contingency window):" +
+        "<ul>" +
+        docs
+          .slice(0, 10)
+          .map(function (d) {
+            return "<li>sale " + escapeHtml(d.sale_id) + " — pending " + d.hours_pending.toFixed(1) + "h, " + d.attempts + " attempt(s)</li>";
+          })
+          .join("") +
+        "</ul>";
+    }
+
+    // --- Load ---
+
+    async function loadAll() {
+      try {
+        var period = periodQuery();
+        var days = daysInput.value || 60;
+
+        var avgTicket = await apiFetch("/reports/avg-ticket" + period);
+        renderKpis(avgTicket);
+        renderDayBars(avgTicket);
+
+        var margin = await apiFetch("/reports/margin" + period);
+        renderMargin(margin.products || []);
+
+        var abc = await apiFetch("/reports/abc-curve" + period);
+        renderAbc(abc.products || []);
+
+        var deadStock = await apiFetch("/reports/dead-stock?days=" + encodeURIComponent(days));
+        renderDeadStock(deadStock.products || []);
+
+        var fiscalAlerts = await apiFetch("/reports/fiscal-alerts");
+        renderFiscalAlert(fiscalAlerts);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    if (token()) {
+      showApp();
+      loadAll();
+    } else {
+      showLogin();
+    }
+  })();
+</script>
