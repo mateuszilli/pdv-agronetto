@@ -1,0 +1,615 @@
+:root {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+  color: #0f0f0f;
+  background-color: #f6f6f6;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+.container {
+  margin: 0;
+  padding-top: 10vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.shell-header {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  text-align: center;
+}
+
+input,
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  color: #0f0f0f;
+  background-color: #ffffff;
+  transition: border-color 0.25s;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: #396cd8;
+}
+button:active {
+  border-color: #396cd8;
+  background-color: #e8e8e8;
+}
+
+.login-screen {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 20rem;
+  padding: 2rem;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.login-subtitle {
+  margin: -0.5rem 0 0.5rem;
+  color: #666;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  text-align: left;
+}
+
+.login-error {
+  color: #c0392b;
+  font-size: 0.9em;
+}
+
+.login-device {
+  margin-top: 0.5rem;
+  font-size: 0.8em;
+  color: #999;
+}
+
+.login-field-inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* --- Authenticated shell --- */
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 1rem 1.5rem;
+  text-align: left;
+}
+
+.shell-header {
+  justify-content: space-between;
+}
+
+.shell-nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.shell-nav-active {
+  border-color: #396cd8;
+}
+
+.sync-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.shell-body {
+  flex: 1;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 40rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+.form-row .login-field {
+  flex: 1;
+}
+
+/* --- Inventory --- */
+
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.product-table th {
+  text-align: left;
+  font-size: 0.85em;
+  color: #888;
+  padding: 0.4rem;
+}
+.product-table td {
+  padding: 0.5rem 0.4rem;
+  border-top: 1px solid #eee;
+}
+.product-table tbody tr {
+  cursor: pointer;
+}
+.product-table tbody tr:hover {
+  background-color: #f6f6f6;
+}
+
+.unit-panel {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+  text-align: left;
+}
+.unit-panel-hint {
+  font-size: 0.85em;
+  color: #888;
+  margin-top: -0.25rem;
+}
+.unit-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.75rem;
+}
+.unit-table th {
+  text-align: left;
+  font-size: 0.8em;
+  color: #888;
+  padding: 0.3rem;
+}
+.unit-table td {
+  padding: 0.3rem;
+  border-top: 1px solid #eee;
+}
+.unit-table input[type="text"],
+.unit-table input:not([type]),
+.unit-table input[inputmode="decimal"] {
+  width: 100%;
+}
+.unit-new-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.unit-new-row .login-field {
+  flex: 1;
+  min-width: 6rem;
+}
+
+/* --- Cash register --- */
+
+.cash-movement-form {
+  display: flex;
+  gap: 0.5rem;
+}
+.cash-movement-form input {
+  flex: 1;
+}
+
+.cash-movement-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.cash-movement-list li {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9em;
+  padding: 0.35rem 0;
+  border-top: 1px solid #eee;
+}
+
+/* --- Sale screen --- */
+
+.sale-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
+}
+
+.sale-search {
+  position: relative;
+}
+.sale-search input {
+  width: 100%;
+}
+
+.search-results {
+  position: absolute;
+  z-index: 10;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
+  list-style: none;
+  padding: 0;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  max-height: 16rem;
+  overflow-y: auto;
+}
+.search-results li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+}
+.search-result-highlighted {
+  background-color: #396cd822;
+}
+
+.cart-table {
+  width: 100%;
+  border-collapse: collapse;
+  flex: 1;
+}
+.cart-table th {
+  text-align: left;
+  font-size: 0.85em;
+  color: #888;
+  padding: 0.4rem;
+}
+.cart-table td {
+  padding: 0.5rem 0.4rem;
+  border-top: 1px solid #eee;
+}
+.cart-table input[type="number"],
+.cart-table input[type="text"] {
+  width: 4.5rem;
+  padding: 0.3em 0.5em;
+}
+.cart-row-selected {
+  background-color: #396cd822;
+}
+.cart-empty {
+  text-align: center;
+  color: #888;
+  padding: 2rem 0;
+}
+
+.unit-selector-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.35);
+}
+.unit-selector {
+  min-width: 20rem;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+}
+.unit-selector h3 {
+  margin: 0 0 0.75rem;
+}
+.unit-selector ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.unit-selector li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.unit-selector li .unit-key {
+  font-weight: 700;
+  opacity: 0.6;
+  margin-right: 0.5rem;
+}
+.unit-selector-highlighted {
+  background-color: #396cd822;
+}
+.unit-selector-hint {
+  margin-top: 0.75rem;
+  font-size: 0.8em;
+  color: #888;
+}
+
+.sale-totals {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.5rem;
+}
+.sale-total {
+  font-size: 1.3em;
+  font-weight: 700;
+}
+
+.sale-shortcuts {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.8em;
+  color: #888;
+  border-top: 1px solid #eee;
+  padding-top: 0.5rem;
+}
+
+.payment-methods {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.payment-method-selected {
+  border-color: #396cd8;
+  background-color: #396cd822;
+}
+
+.payment-warning {
+  color: #9a6700;
+  font-size: 0.9em;
+}
+
+/* --- Low-stock banner (Inventory) / purchasing status (Purchasing) --- */
+
+.low-stock-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background-color: #9a67001a;
+  color: #9a6700;
+  font-size: 0.9em;
+}
+.low-stock-banner button {
+  font-size: 0.9em;
+}
+
+.po-status {
+  font-size: 0.85em;
+  font-weight: 600;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background-color: #6e768166;
+}
+.po-status-received {
+  color: #1a7f37;
+}
+.po-status-partially_received {
+  color: #9a6700;
+}
+
+.fiscal-status {
+  font-size: 0.9em;
+  font-weight: 600;
+}
+.fiscal-status-authorized {
+  color: #1a7f37;
+}
+.fiscal-status-pending {
+  color: #9a6700;
+}
+.fiscal-status-rejected {
+  color: #cf222e;
+}
+
+/* --- Customer identification (sale screen) --- */
+
+.sale-customer-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9em;
+}
+
+.customer-selector {
+  width: 28rem;
+  max-width: 90vw;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+}
+.customer-selector h3 {
+  margin: 0 0 0.75rem;
+}
+.customer-selector input {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+.customer-selector ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 16rem;
+  overflow-y: auto;
+}
+.customer-selector li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.customer-selector-empty {
+  color: #888;
+  cursor: default !important;
+}
+
+.payment-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.payment-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+}
+.payment-list li button {
+  padding: 0 0.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #f6f6f6;
+    background-color: #2f2f2f;
+  }
+
+  input,
+  button {
+    color: #ffffff;
+    background-color: #0f0f0f98;
+  }
+  button:active {
+    background-color: #0f0f0f69;
+  }
+
+  .login-card {
+    background-color: #1f1f1f;
+  }
+
+  .login-subtitle {
+    color: #aaa;
+  }
+
+  .panel,
+  .search-results {
+    background-color: #1f1f1f;
+  }
+
+  .product-table td,
+  .cart-table td,
+  .unit-table td,
+  .unit-panel,
+  .cash-movement-list li,
+  .payment-list li,
+  .sale-shortcuts {
+    border-color: #3a3a3a;
+  }
+
+  .product-table tbody tr:hover {
+    background-color: #2a2a2a;
+  }
+
+  .search-result-highlighted,
+  .cart-row-selected {
+    background-color: #396cd844;
+  }
+
+  .payment-method-selected {
+    background-color: #396cd844;
+  }
+
+  .unit-selector {
+    background-color: #1f1f1f;
+  }
+  .unit-selector-highlighted {
+    background-color: #396cd844;
+  }
+
+  .customer-selector {
+    background-color: #1f1f1f;
+  }
+
+  .payment-warning {
+    color: #d9a441;
+  }
+
+  .low-stock-banner {
+    background-color: #d9a44133;
+    color: #d9a441;
+  }
+
+  .po-status-received {
+    color: #3fb950;
+  }
+  .po-status-partially_received {
+    color: #d9a441;
+  }
+
+  .fiscal-status-authorized {
+    color: #3fb950;
+  }
+  .fiscal-status-pending {
+    color: #d9a441;
+  }
+  .fiscal-status-rejected {
+    color: #f85149;
+  }
+}

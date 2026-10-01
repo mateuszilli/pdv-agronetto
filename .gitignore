@@ -3,13 +3,13 @@
 .env.local
 
 # Go
-apps/backend/pdv-backend
-apps/backend/*.exe
+api/pdv-backend
+api/*.exe
 
 # Node (covered per-app too, kept here for anything at the root)
 node_modules/
 
-# Rust/Tauri build output (also covered by apps/client/src-tauri/.gitignore)
+# Rust/Tauri build output (also covered by app/src-tauri/.gitignore)
 target/
 
 # Local SQLite dev databases (client data lives outside VCS)
